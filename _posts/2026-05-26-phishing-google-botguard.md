@@ -134,13 +134,14 @@ Botguard actively fights reverse engineering in two clever ways:
 The VM constantly polls performance.now() and Date.now(). If you pause execution with a debugger, the elapsed time grows too large. This time delta corrupts a seed value (K.U) used to decrypt the next block of bytecode. The program doesn't crash visibly, it silently diverges into a garbage execution path and generates an invalid token.
 
 2. Anti-Logger
+
 The script aggressively overrides console methods. If you try to inject a console.log or conditional breakpoint, it triggers a trap that shifts an internal memory pointer, causing the VM to read the wrong bytes and corrupting the instruction stream. The session dies quietly.
 
 
 ### Secret Token Weakness
 Despite all this complexity, the research [Google Botguard Security Research](https://github.com/tomkabel/google-botguard-security-research) identified a fundamental architectural flaw: the server validates token integrity, not token origin. A token minted in a clean environment is indistinguishable from one minted by a real user.
 
-The bypass (demonstrated in 2021) used a headless browser (go-rod/Golang) with stealth patches to mask navigator.webdriver and spoof WebGL/user-agent signals. This "puppet" browser navigated to Google's login page, let Botguard run fully, extracted the minted token before it was consumed, and injected it into a separate (attacker-controlled) session. No VM opcodes needed to be cracked.
+The bypass (demonstrated in 2021) used a headless browser (go-rod/Golang) with stealth patches to mask navigator.webdriver and spoof WebGL/user-agent signals. This "puppet" browser navigated to Google's login page, let Botguard run fully, but it did'nt stopped the login flow even though is clearly automated.
 
 ## What is needed to fight against BotGuard
 To bypass Google’s BotGuard protection, is necessary the utilization of an undetected web browser with automation capabilities, Kuba Gretzky called it  Puppet  or (evilpuppet) which servers a module to harvest secrets token and inject it into the victim’s request.
